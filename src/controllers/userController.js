@@ -1,4 +1,4 @@
-import { connectToDatabase } from '../services/database.js';
+import { connectToDatabase } from '../services/databaseService.js';
 
 export const exampleControllerFunction = async (req, res) => {
     try {

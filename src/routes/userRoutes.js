@@ -1,6 +1,5 @@
-// routes/temp.js
 import express from 'express';
-import { exampleControllerFunction } from '../controllers/temp.js';
+import { exampleControllerFunction } from '../controllers/userController.js';
 
 const router = express.Router();
 

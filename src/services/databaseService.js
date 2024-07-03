@@ -1,4 +1,3 @@
-// src/services/database.js
 import { MongoClient } from 'mongodb';
 
 const uri = "mongodb+srv://monton:IB7LWqFXhGgikihQ@cluster0.uaz0sbi.mongodb.net/voyage?retryWrites=true&w=majority&appName=Cluster0";
