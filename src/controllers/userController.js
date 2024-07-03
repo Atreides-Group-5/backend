@@ -1,6 +1,5 @@
-// src/controllers/userController.js
 import User from '../models/userModel.js';
-import { hashPassword, comparePassword } from '../utils/hashPassword.js';
+import { comparePassword } from '../utils/hashPassword.js';
 import jwt from 'jsonwebtoken';
 
 export const registerUser = async (req, res) => {
@@ -31,7 +30,16 @@ export const loginUser = async (req, res) => {
             return res.status(400).json({ message: 'Invalid credentials' });
         }
         const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, { expiresIn: '1h' });
-        res.json({ token });
+        res.json({
+            message: 'Login successful',
+            token,
+            data: {
+                id: user._id,
+                firstname: user.firstname,
+                lastname: user.lastname,
+                email: user.email
+            }
+        });
     } catch (error) {
         res.status(500).json({ message: 'Server error', error });
     }
