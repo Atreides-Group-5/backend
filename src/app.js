@@ -1,15 +1,25 @@
 // src/app.js
 import dotenv from 'dotenv';
-dotenv.config();  // Load environment variables
+dotenv.config();
 
 import express from 'express';
 import mongoose from 'mongoose';
+import cors from 'cors';
 import userRoutes from './routes/userRoutes.js';
 
 console.log('MONGO_URI:', process.env.MONGO_URI);  // Debug
 console.log('PORT:', process.env.PORT);  // Debug
 
 const app = express();
+
+// Define CORS options
+const corsOptions = {
+    origin: 'http://localhost:5173', // Replace with your frontend URL
+    optionsSuccessStatus: 200
+};
+
+// Enable CORS with options
+app.use(cors(corsOptions));
 
 app.use(express.json());
 
