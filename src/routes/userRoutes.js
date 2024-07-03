@@ -1,8 +1,10 @@
 import express from 'express';
-import { exampleControllerFunction } from '../controllers/userController.js';
+import { registerUser, loginUser } from '../controllers/userController.js';
+import { validateRegistration } from '../middlewares/authMiddleware.js';
 
 const router = express.Router();
 
-router.get('/example', exampleControllerFunction);
+router.post('/register', validateRegistration, registerUser);
+router.post('/login', loginUser);
 
 export default router;
