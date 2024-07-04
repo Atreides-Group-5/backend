@@ -6,6 +6,7 @@ import express from 'express';
 import mongoose from 'mongoose';
 import cors from 'cors';
 import userRoutes from './routes/userRoutes.js';
+import tripRoutes from './routes/tripRoutes.js';
 
 console.log('MONGO_URI:', process.env.MONGO_URI);  // Debug
 console.log('PORT:', process.env.PORT);  // Debug
@@ -24,6 +25,7 @@ app.use(cors(corsOptions));
 app.use(express.json());
 
 app.use('/api/users', userRoutes);
+app.use('/api/trips', tripRoutes);
 
 const PORT = process.env.PORT || 3000;
 const MONGO_URI = process.env.MONGO_URI;
