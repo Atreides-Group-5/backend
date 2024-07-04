@@ -37,7 +37,12 @@ export const loginUser = async (req, res) => {
             user: {id: user._id,
             firstname: user.firstname,
             lastname: user.lastname,
-            email: user.email}
+            email: user.email,
+            dateOfBirth: user.dateOfBirth,
+            country: user.country,
+            phone: user.phone,
+            profilePicture: user.profilePicture
+        }
         });
     } catch (error) {
         res.status(500).json({ message: 'Server error', error });

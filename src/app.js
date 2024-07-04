@@ -1,12 +1,17 @@
-// src/app.js
 import dotenv from 'dotenv';
 dotenv.config();
 
 import express from 'express';
 import mongoose from 'mongoose';
 import cors from 'cors';
+import path from 'path';
+import { fileURLToPath } from 'url';
 import userRoutes from './routes/userRoutes.js';
-import tripRoutes from './routes/tripRoutes.js';
+import userProfileRoutes from './routes/userProfileRoutes.js'; // Import the new routes
+
+// Define __dirname for ES modules
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 console.log('MONGO_URI:', process.env.MONGO_URI);  // Debug
 console.log('PORT:', process.env.PORT);  // Debug
@@ -21,11 +26,11 @@ const corsOptions = {
 
 // Enable CORS with options
 app.use(cors(corsOptions));
-
 app.use(express.json());
+app.use('/uploads', express.static(path.join(__dirname, 'uploads'))); // Serve uploaded files
 
 app.use('/api/users', userRoutes);
-app.use('/api/trips', tripRoutes);
+app.use('/api/profile', userProfileRoutes); // Use the new routes
 
 const PORT = process.env.PORT || 3000;
 const MONGO_URI = process.env.MONGO_URI;
