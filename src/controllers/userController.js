@@ -3,8 +3,16 @@ import { hashPassword, comparePassword } from "../utils/hashPassword.js";
 import jwt from "jsonwebtoken";
 
 export const registerUser = async (req, res) => {
-  const { firstname, lastname, email, password, dateOfBirth, country, phone } =
-    req.body;
+  const {
+    firstname,
+    lastname,
+    email,
+    gender,
+    password,
+    dateOfBirth,
+    country,
+    phone,
+  } = req.body;
 
   // ตรวจสอบรูปแบบ dateOfBirth (dd-mm-yyyy)
   const dateOfBirthRegex = /^\d{2}-\d{2}-\d{4}$/;
@@ -75,6 +83,7 @@ export const loginUser = async (req, res) => {
         firstname: user.firstname,
         lastname: user.lastname,
         email: user.email,
+        gender: user.gender,
         dateOfBirth: formattedDateOfBirth, // ส่งกลับในรูปแบบ yyyy-mm-dd
         country: user.country,
         phone: user.phone,

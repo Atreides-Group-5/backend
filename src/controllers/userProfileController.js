@@ -34,13 +34,11 @@ export const updateUserProfile = async (req, res) => {
     user.country = country || user.country;
     user.phone = phone || user.phone;
 
-    // อัพเดท dateOfBirth โดยตรง (yyyy-mm-dd)
     if (dateOfBirth) {
       user.dateOfBirth = new Date(dateOfBirth);
     }
 
     if (profilePictureUrl) {
-      // ลบรูปโปรไฟล์เก่าออกจาก Cloudinary (ถ้ามี)
       if (user.profilePicture) {
         const publicId = user.profilePicture.split("/").pop().split(".")[0];
         await cloudinary.uploader.destroy(publicId);
@@ -50,7 +48,6 @@ export const updateUserProfile = async (req, res) => {
 
     await user.save();
 
-    // แปลง dateOfBirth เป็น string ในรูปแบบ yyyy-mm-dd
     const formattedDateOfBirth = user.dateOfBirth
       ? user.dateOfBirth.toISOString().slice(0, 10)
       : null;
@@ -63,7 +60,7 @@ export const updateUserProfile = async (req, res) => {
         lastname: user.lastname,
         email: user.email,
         gender: user.gender,
-        dateOfBirth: formattedDateOfBirth, // ส่งกลับเฉพาะส่วนวันที่
+        dateOfBirth: formattedDateOfBirth,
         country: user.country,
         phone: user.phone,
         profilePicture: user.profilePicture,
