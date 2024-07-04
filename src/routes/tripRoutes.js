@@ -5,5 +5,6 @@ const router = express.Router();
 
 // Get all trips
 router.get('/', tripController.getAllTrips);
+router.get('/:id', tripController.getTripById);
 
 export default router;

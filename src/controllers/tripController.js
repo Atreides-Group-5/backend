@@ -6,9 +6,17 @@ const getAllTrips = async (req, res, next) => {
         const trips = await Trip.find();
         res.status(200).json({ message: 'Get All Movies', trips: trips });
     } catch (error) {
-        const trips = await Trip.find();
         res.status(404).json({ message: error.message });
     }
 }
 
-export { getAllTrips };
+const getTripById = async (req, res, next) => {
+    try {
+        const trip = await Trip.findById({ _id: req.params.id });
+        res.status(200).json({ message: 'Successfully retrieved trip', trip: trip });
+    } catch (error) {
+        res.status(404).json({ message: error.message });
+    }
+}
+
+export { getAllTrips, getTripById };
