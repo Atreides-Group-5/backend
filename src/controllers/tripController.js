@@ -4,7 +4,7 @@ import Trip from '../models/tripModel.js';
 const getAllTrips = async (req, res, next) => {
     try {
         const trips = await Trip.find();
-        res.status(200).json({ message: 'Get All Movies', trips: trips });
+        res.status(200).json({ message: 'Get All Trips', trips: trips });
     } catch (error) {
         res.status(404).json({ message: error.message });
     }
