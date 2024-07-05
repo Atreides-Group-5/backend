@@ -7,7 +7,10 @@ import cors from 'cors';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import userRoutes from './routes/userRoutes.js';
-import userProfileRoutes from './routes/userProfileRoutes.js'; // Import the new routes
+import tripRoutes from './routes/tripRoutes.js';
+import userProfileRoutes from './routes/userProfileRoutes.js'; 
+
+import errorMiddleware from './middlewares/errorMiddleware.js'; 
 
 // Define __dirname for ES modules
 const __filename = fileURLToPath(import.meta.url);
@@ -29,9 +32,19 @@ app.use(cors(corsOptions));
 app.use(express.json());
 app.use('/uploads', express.static(path.join(__dirname, 'uploads'))); // Serve uploaded files
 
+// Routes
 app.use('/api/users', userRoutes);
+app.use('/api/trips', tripRoutes);
 app.use('/api/profile', userProfileRoutes); // Use the new routes
 
+// Handle 404 route not found
+app.use((req, res) => {
+    res.status(404).json({ error: 'Route not found' });
+});
+// Handle Errors
+app.use(errorMiddleware);
+
+// Start Express Server
 const PORT = process.env.PORT || 3000;
 const MONGO_URI = process.env.MONGO_URI;
 

@@ -10,6 +10,7 @@ export const updateUserProfile = async (req, res) => {
         return res.sendStatus(401); // Unauthorized if no auth header
     }
 
+  if (req.file) {
     try {
         const token = authHeader.replace("Bearer ", "");
         const decodedToken = jwt.verify(token, process.env.JWT_SECRET);
@@ -86,4 +87,55 @@ export const updateUserProfile = async (req, res) => {
     } catch (error) {
         return res.sendStatus(403); // Forbidden if token verification failed
     }
+  }
+
+  try {
+    const user = await User.findById(id);
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    user.firstname = firstname || user.firstname;
+    user.lastname = lastname || user.lastname;
+    user.email = email || user.email;
+    user.gender = gender || user.gender;
+    user.country = country || user.country;
+    user.phone = phone || user.phone;
+
+    if (dateOfBirth) {
+      user.dateOfBirth = new Date(dateOfBirth);
+    }
+
+    if (profilePictureUrl) {
+      if (user.profilePicture) {
+        const publicId = user.profilePicture.split("/").pop().split(".")[0];
+        await cloudinary.uploader.destroy(publicId);
+      }
+      user.profilePicture = profilePictureUrl;
+    }
+
+    await user.save();
+
+    const formattedDateOfBirth = user.dateOfBirth
+      ? user.dateOfBirth.toISOString().slice(0, 10)
+      : null;
+
+    res.json({
+      message: "User profile updated successfully",
+      data: {
+        id: user._id,
+        firstname: user.firstname,
+        lastname: user.lastname,
+        email: user.email,
+        gender: user.gender,
+        dateOfBirth: formattedDateOfBirth,
+        country: user.country,
+        phone: user.phone,
+        profilePicture: user.profilePicture,
+      },
+    });
+  } catch (error) {
+    console.error("Error updating user profile:", error);
+    res.status(500).json({ message: "Server error", error });
+  }
 };
