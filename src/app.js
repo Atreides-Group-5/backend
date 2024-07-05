@@ -8,6 +8,7 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 import userRoutes from './routes/userRoutes.js';
 import tripRoutes from './routes/tripRoutes.js';
+import couponRoutes from './routes/couponRoutes.js';
 import userProfileRoutes from './routes/userProfileRoutes.js'; 
 
 import errorMiddleware from './middlewares/errorMiddleware.js'; 
@@ -36,6 +37,7 @@ app.use('/uploads', express.static(path.join(__dirname, 'uploads'))); // Serve u
 app.use('/api/users', userRoutes);
 app.use('/api/trips', tripRoutes);
 app.use('/api/profile', userProfileRoutes); // Use the new routes
+app.use('/api/coupons', couponRoutes);
 
 // Handle 404 route not found
 app.use((req, res) => {
