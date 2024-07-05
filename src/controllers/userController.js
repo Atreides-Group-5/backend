@@ -14,7 +14,6 @@ export const registerUser = async (req, res) => {
     phone,
   } = req.body;
 
-  // ตรวจสอบรูปแบบ dateOfBirth (dd-mm-yyyy)
   const dateOfBirthRegex = /^\d{2}-\d{2}-\d{4}$/;
   if (dateOfBirth && !dateOfBirthRegex.test(dateOfBirth)) {
     return res
@@ -30,7 +29,6 @@ export const registerUser = async (req, res) => {
 
     const hashedPassword = await hashPassword(password);
 
-    // แปลง dateOfBirth เป็น object Date ก่อนบันทึก
     let dateOfBirthToSave = null;
     if (dateOfBirth) {
       const [dd, mm, yyyy] = dateOfBirth.split("-");
@@ -70,9 +68,8 @@ export const loginUser = async (req, res) => {
       expiresIn: "1h",
     });
 
-    // แปลง dateOfBirth เป็นรูปแบบ yyyy-mm-dd (ถ้ามี)
     const formattedDateOfBirth = user.dateOfBirth
-      ? user.dateOfBirth.toISOString().split("T")[0] // แปลง Date object เป็น string
+      ? user.dateOfBirth.toISOString().split("T")[0]
       : null;
 
     res.json({
@@ -84,7 +81,7 @@ export const loginUser = async (req, res) => {
         lastname: user.lastname,
         email: user.email,
         gender: user.gender,
-        dateOfBirth: formattedDateOfBirth, // ส่งกลับในรูปแบบ yyyy-mm-dd
+        dateOfBirth: formattedDateOfBirth,
         country: user.country,
         phone: user.phone,
         profilePicture: user.profilePicture,
