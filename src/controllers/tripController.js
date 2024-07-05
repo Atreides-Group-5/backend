@@ -23,8 +23,7 @@ const createTrip = async (req, res, next) => {
     try {
         const {
             name,
-            start_date,
-            end_date,
+            duration_days,
             destination_from,
             destination_to,
             rating,
@@ -35,8 +34,7 @@ const createTrip = async (req, res, next) => {
         } = req.body;
         const tripData = {
             name,
-            start_date,
-            end_date,
+            duration_days,
             destination_from,
             destination_to,
             rating,
@@ -47,7 +45,7 @@ const createTrip = async (req, res, next) => {
         };
         // VALIDATE tripData done by mongoose
         const trip = await Trip.create(tripData);
-        res.status(201).json({ message: 'Created Trip', data: trip });
+        res.status(201).json({ message: 'Created Trip', trip: trip });
     } catch (error) {
         next(error);
     }

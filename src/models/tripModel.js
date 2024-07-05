@@ -2,8 +2,7 @@ import mongoose from "mongoose";
 
 const tripSchema = new mongoose.Schema({
 	name: { type: String, required: true },
-	start_date: { type: Date, required: true },
-	end_date: { type: Date, required: true },
+	duration_days: { type: Number, required: true },
 	destination_from: { type: String, required: true },
 	destination_to: { type: String, required: true },
 	rating: { type: Number, required: true },
