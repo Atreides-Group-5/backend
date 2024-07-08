@@ -16,6 +16,7 @@ export const registerUser = async (req, res) => {
       lastname,
       email,
       password: hashedPassword,
+      isAdmin: false, // เพิ่ม isAdmin และตั้งค่าเริ่มต้นเป็น false
     });
     await newUser.save();
     res.status(201).json({ message: "User registered successfully" });
@@ -45,6 +46,8 @@ export const loginUser = async (req, res) => {
         country: user.country,
         phone: user.phone,
         profilePicture: user.profilePicture,
+        gender: user.gender,
+        isAdmin: user.isAdmin, // เพิ่ม isAdmin ใน token
       },
       process.env.JWT_SECRET,
       { expiresIn: "30m" }
