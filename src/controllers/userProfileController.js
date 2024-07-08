@@ -1,18 +1,24 @@
 import User from '../models/userModel.js';
 import { cloudinary } from '../config/cloudinaryConfig.js';
 
+const TARGET_FOLDER = 'voyage/profile_pictures';
 export const updateUserProfile = async (req, res) => {
+    // console.log(req.body); // Debug
     const { id } = req.params;
-    const { firstname, lastname, email, gender, dateOfBirth, country, phone } = req.body;
+    const { firstname, lastname, email, gender, dateOfBirth, country, phone, profilePicture } = req.body;
     let profilePictureUrl = null;
 
-    if (req.file) {
+    if (profilePicture) {
         try {
-            const result = await cloudinary.uploader.upload(req.file.path, {
-                folder: 'profile_pictures'
+            const result = await cloudinary.uploader.upload(profilePicture, {
+                folder: TARGET_FOLDER,
+                resource_type: "auto",
             });
+            // console.log("RESULT", result); // Debug
             profilePictureUrl = result.secure_url;
+            // console.log("PROFILE PICTURE URL", profilePictureUrl); // Debug
         } catch (error) {
+            // console.log("ERROR", error); // Debug
             return res.status(500).json({ message: 'Error uploading to Cloudinary', error });
         }
     }
@@ -20,6 +26,7 @@ export const updateUserProfile = async (req, res) => {
     try {
         const user = await User.findById(id);
         if (!user) {
+            // console.log("USER NOT FOUND"); // Debug
             return res.status(404).json({ message: 'User not found' });
         }
 
@@ -34,7 +41,8 @@ export const updateUserProfile = async (req, res) => {
         if (profilePictureUrl) {
             // If user already has a profile picture, delete the old one from Cloudinary
             if (user.profilePicture) {
-                const publicId = user.profilePicture.split('/').pop().split('.')[0];
+                const publicId = TARGET_FOLDER + '/' + user.profilePicture.split('/').pop().split('.')[0];
+                console.log("PUBLIC ID", publicId);
                 await cloudinary.uploader.destroy(publicId);
             }
             user.profilePicture = profilePictureUrl;
@@ -44,7 +52,7 @@ export const updateUserProfile = async (req, res) => {
 
         res.json({
             message: 'User profile updated successfully',
-            data: {
+            user: {
                 id: user._id,
                 firstname: user.firstname,
                 lastname: user.lastname,
