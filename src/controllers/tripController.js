@@ -99,52 +99,63 @@ const updateTrip = async (req, res, next) => {
   const { id } = req.params;
 
   try {
+    console.log("Received update request for trip:", id);
+    console.log("Request body:", req.body);
+    console.log("Request files:", req.files);
+
     const trip = await Trip.findById(id);
 
     if (!trip) {
       return res.status(404).json({ message: "ไม่พบข้อมูลทริป" });
     }
 
-    // Update fields
-    trip.name = req.body.name || trip.name;
-    trip.duration_days = req.body.duration_days || trip.duration_days;
-    trip.destination_from = req.body.destination_from || trip.destination_from;
-    trip.destination_to = req.body.destination_to || trip.destination_to;
-    trip.rating = req.body.rating || trip.rating;
-    trip.price = req.body.price || trip.price;
-    trip.description = req.body.description || trip.description;
-    trip.sub_expenses = req.body.sub_expenses || trip.sub_expenses;
+    const {
+      name,
+      duration_days,
+      destination_from,
+      destination_to,
+      rating,
+      price,
+      description,
+      sub_expenses,
+    } = req.body;
 
-    // Handle image updates
-    if (req.body.images && req.body.images.length > 0) {
-      // Delete existing images from Cloudinary
-      for (let imageUrl of trip.images) {
-        const publicId =
-          TARGET_FOLDER + "/" + imageUrl.split("/").pop().split(".")[0];
-        await cloudinary.uploader.destroy(publicId);
-      }
+    // Update fields if provided
+    if (name) trip.name = name;
+    if (duration_days) trip.duration_days = duration_days;
+    if (destination_from) trip.destination_from = destination_from;
+    if (destination_to) trip.destination_to = destination_to;
+    if (rating) trip.rating = rating;
+    if (price) trip.price = price;
+    if (description) trip.description = description;
+    if (sub_expenses) trip.sub_expenses = sub_expenses;
 
-      // Upload new images
-      let cloudinaryImages = [];
-      for (let image of req.body.images) {
+    // Handle new images
+    if (req.files && req.files.length > 0) {
+      let newCloudinaryImages = [];
+
+      for (let file of req.files) {
         try {
-          const result = await cloudinary.uploader.upload(image, {
+          const result = await cloudinary.uploader.upload(file.path, {
             folder: TARGET_FOLDER,
             resource_type: "auto",
           });
-          cloudinaryImages.push(result.secure_url);
+          newCloudinaryImages.push(result.secure_url);
         } catch (error) {
           console.error("Error uploading image to Cloudinary:", error);
         }
       }
-      trip.images = cloudinaryImages;
+
+      // Combine existing images with new images
+      trip.images = [...trip.images, ...newCloudinaryImages];
     }
 
     await trip.save();
 
     res.json({ message: "Trip updated successfully", trip });
   } catch (error) {
-    next(error); // Use next() to pass the error to the error-handling middleware
+    console.error("Error in updateTrip:", error);
+    next(error);
   }
 };
 
