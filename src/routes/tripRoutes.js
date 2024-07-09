@@ -1,12 +1,19 @@
 import express from "express";
-import * as tripController from "../controllers/tripController.js";
+import {
+  getAllTrips,
+  getTripById,
+  createTrip,
+  updateTrip,
+  deleteTrip,
+  upload,
+} from "../controllers/tripController.js";
 
 const router = express.Router();
 
-router.get("/", tripController.getAllTrips);
-router.get("/:id", tripController.getTripById);
-router.post("/", tripController.createTrip);
-router.patch("/:id", tripController.updateTrip);
-router.delete("/:id", tripController.deleteTrip);
+router.get("/", getAllTrips);
+router.get("/:id", getTripById);
+router.post("/", upload.array("images"), createTrip);
+router.put("/:id", upload.array("images"), updateTrip);
+router.delete("/:id", deleteTrip);
 
 export default router;
