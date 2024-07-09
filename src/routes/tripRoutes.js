@@ -4,6 +4,7 @@ import {
   getTripById,
   createTrip,
   updateTrip,
+  getTripsByName,
   deleteTrip,
   upload,
 } from "../controllers/tripController.js";
@@ -11,6 +12,7 @@ import {
 const router = express.Router();
 
 router.get("/", getAllTrips);
+router.get("/search", getTripsByName);
 router.get("/:id", getTripById);
 router.post("/", upload.array("images"), createTrip);
 router.put("/:id", upload.array("images"), updateTrip);

@@ -5,15 +5,7 @@ import multer from "multer";
 const TARGET_FOLDER = "voyage/trips";
 
 // Multer storage configuration
-const storage = multer.diskStorage({
-  destination: function (req, file, cb) {
-    cb(null, "uploads/");
-  },
-  filename: function (req, file, cb) {
-    cb(null, Date.now() + "-" + file.originalname);
-  },
-});
-
+const storage = multer.memoryStorage();
 const upload = multer({ storage: storage });
 
 // Get all trips
@@ -64,9 +56,15 @@ const createTrip = async (req, res, next) => {
     if (req.files && req.files.length > 0) {
       for (let file of req.files) {
         try {
-          const result = await cloudinary.uploader.upload(file.path, {
-            folder: TARGET_FOLDER,
-            resource_type: "auto",
+          const result = await new Promise((resolve, reject) => {
+            const uploadStream = cloudinary.uploader.upload_stream(
+              { folder: TARGET_FOLDER, resource_type: "auto" },
+              (error, result) => {
+                if (error) reject(error);
+                else resolve(result);
+              }
+            );
+            uploadStream.end(file.buffer);
           });
           cloudinaryImages.push(result.secure_url);
         } catch (error) {
@@ -132,13 +130,27 @@ const updateTrip = async (req, res, next) => {
 
     // Handle new images
     if (req.files && req.files.length > 0) {
+      // Delete existing images from Cloudinary
+      for (let imageUrl of trip.images) {
+        const publicId =
+          TARGET_FOLDER + "/" + imageUrl.split("/").pop().split(".")[0];
+        await cloudinary.uploader.destroy(publicId);
+      }
+
+      // Upload new images
       let newCloudinaryImages = [];
 
       for (let file of req.files) {
         try {
-          const result = await cloudinary.uploader.upload(file.path, {
-            folder: TARGET_FOLDER,
-            resource_type: "auto",
+          const result = await new Promise((resolve, reject) => {
+            const uploadStream = cloudinary.uploader.upload_stream(
+              { folder: TARGET_FOLDER, resource_type: "auto" },
+              (error, result) => {
+                if (error) reject(error);
+                else resolve(result);
+              }
+            );
+            uploadStream.end(file.buffer);
           });
           newCloudinaryImages.push(result.secure_url);
         } catch (error) {
@@ -146,8 +158,8 @@ const updateTrip = async (req, res, next) => {
         }
       }
 
-      // Combine existing images with new images
-      trip.images = [...trip.images, ...newCloudinaryImages];
+      // Replace old images with new images
+      trip.images = newCloudinaryImages;
     }
 
     await trip.save();
@@ -182,4 +194,34 @@ const deleteTrip = async (req, res, next) => {
   }
 };
 
-export { getAllTrips, getTripById, createTrip, updateTrip, deleteTrip, upload };
+const getTripsByName = async (req, res, next) => {
+  try {
+    const { name } = req.query;
+    if (!name) {
+      return res
+        .status(400)
+        .json({ message: "กรุณาระบุชื่อทริปที่ต้องการค้นหา" });
+    }
+
+    // ใช้ regular expression เพื่อค้นหาชื่อทริปที่มีคำที่ต้องการ (case-insensitive)
+    const trips = await Trip.find({ name: { $regex: name, $options: "i" } });
+
+    if (trips.length === 0) {
+      return res.status(404).json({ message: "ไม่พบทริปที่ตรงกับคำค้นหา" });
+    }
+
+    res.status(200).json({ message: "ค้นหาทริปสำเร็จ", trips: trips });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export {
+  getAllTrips,
+  getTripById,
+  getTripsByName,
+  createTrip,
+  updateTrip,
+  deleteTrip,
+  upload,
+};
