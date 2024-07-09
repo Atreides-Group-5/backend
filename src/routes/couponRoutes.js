@@ -4,7 +4,8 @@ import * as couponController from "../controllers/couponController.js";
 const router = express.Router();
 
 router.get('/', couponController.getAllCoupons);
-router.patch('/:id', couponController.updateCoupon);
+router.get('/:id', couponController.getCouponById);
+router.put('/:id', couponController.updateCoupon);
 router.post('/', couponController.createCoupon);
 router.delete('/:id', couponController.deleteCoupon);
 
