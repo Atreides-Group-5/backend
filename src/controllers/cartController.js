@@ -1,4 +1,5 @@
 import Cart from '../models/cartModel.js';
+import mongoose from 'mongoose';
 
 // Add to cart
 const addToCart = async (req, res) => {
@@ -41,7 +42,7 @@ const getCart = async (req, res) => {
             cart = await Cart.create(cart);
         }
         
-        console.log(cart);
+        // console.log(cart);
         res.json({ message: 'Successfully retrieved cart', cart: cart.cart });
     } catch (error) {
         console.error(error);
@@ -49,7 +50,7 @@ const getCart = async (req, res) => {
     }
 }
 
-// Delete from cart
+// Delete from cart the item in the cart array by id
 const deleteFromCart = async (req, res) => {
     const { id } = req.params;
     try {
@@ -64,4 +65,36 @@ const deleteFromCart = async (req, res) => {
     }
 }
 
-export { addToCart, getCart, deleteFromCart };
+// Get the cart item in the cart array by id
+const getCartItemById = async (req, res) => {
+    const { id } = req.params;
+    // console.log(req.params);
+    // console.log("ID:::", id);
+    try {
+        const result = await Cart.findOne({ user_id: req.user.id, 'cart': { $elemMatch: { _id: id } } });
+        const cartItem = result.cart.find(item => item._id == id); 
+        res.json({ message: 'Successfully retrieved cart item', cartItem });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'Failed to retrieve cart item' });
+    }
+}
+
+// Update the cart item in the cart array by id
+const updateCartItem = async (req, res) => {
+    const { id } = req.params;
+
+    const { departure_date, travelers } = req.body;
+    try {
+        await Cart.findOneAndUpdate(
+            { user_id: req.user.id, 'cart': { $elemMatch: { _id: id } } },
+            { $set: { 'cart.$.departure_date': departure_date, 'cart.$.travelers': travelers } }
+        );
+        res.json({ message: 'Successfully updated cart item' });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'Failed to update cart item' });
+    }
+}
+
+export { addToCart, getCart, deleteFromCart, getCartItemById, updateCartItem };
