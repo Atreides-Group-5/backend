@@ -10,6 +10,7 @@ import userRoutes from "./routes/userRoutes.js";
 import tripRoutes from "./routes/tripRoutes.js";
 import couponRoutes from "./routes/couponRoutes.js";
 import userProfileRoutes from "./routes/userProfileRoutes.js";
+import cartRoutes from "./routes/cartRoutes.js";
 
 import errorMiddleware from "./middlewares/errorMiddleware.js";
 
@@ -38,6 +39,7 @@ app.use("/api/users", userRoutes);
 app.use("/api/trips", tripRoutes);
 app.use("/api/profile", userProfileRoutes); // Use the new routes
 app.use("/api/coupons", couponRoutes);
+app.use("/api/cart", cartRoutes);
 
 // Handle 404 route not found
 app.use((req, res) => {
