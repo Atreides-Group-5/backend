@@ -1,16 +1,16 @@
 import dotenv from 'dotenv';
 dotenv.config();
 
-import express from 'express';
-import mongoose from 'mongoose';
-import cors from 'cors';
-import path from 'path';
-import { fileURLToPath } from 'url';
-import userRoutes from './routes/userRoutes.js';
-import tripRoutes from './routes/tripRoutes.js';
-import couponRoutes from './routes/couponRoutes.js';
-import userProfileRoutes from './routes/userProfileRoutes.js'; 
-import cartRoutes from './routes/cartRoutes.js';
+import express from "express";
+import mongoose from "mongoose";
+import cors from "cors";
+import path from "path";
+import { fileURLToPath } from "url";
+import userRoutes from "./routes/userRoutes.js";
+import tripRoutes from "./routes/tripRoutes.js";
+import couponRoutes from "./routes/couponRoutes.js";
+import userProfileRoutes from "./routes/userProfileRoutes.js";
+import cartRoutes from "./routes/cartRoutes.js";
 
 import errorMiddleware from './middlewares/errorMiddleware.js'; 
 
@@ -35,11 +35,11 @@ app.use(express.json({ limit: '4mb' }));
 // app.use('/uploads', express.static(path.join(__dirname, 'uploads'))); // ไม่ต้องใช้แล้ว
 
 // Routes
-app.use('/api/users', userRoutes);
-app.use('/api/trips', tripRoutes);
-app.use('/api/profile', userProfileRoutes); // Use the new routes
-app.use('/api/coupons', couponRoutes);
-app.use('/api/cart', cartRoutes);
+app.use("/api/users", userRoutes);
+app.use("/api/trips", tripRoutes);
+app.use("/api/profile", userProfileRoutes); // Use the new routes
+app.use("/api/coupons", couponRoutes);
+app.use("/api/cart", cartRoutes);
 
 // Handle 404 route not found
 app.use((req, res) => {
