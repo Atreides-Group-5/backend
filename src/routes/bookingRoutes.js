@@ -10,4 +10,10 @@ router.post('/', authenticateMiddleware, bookingController.createBooking);
 // Get user booking by status
 router.get('/:status', authenticateMiddleware, bookingController.getBookingsByStatus);
 
+// Make payment for given bookingId
+router.patch('/pay/:bookingId', authenticateMiddleware, bookingController.makePayment);
+
+// Cancel booking for given bookingId
+router.patch('/cancel/:bookingId', authenticateMiddleware, bookingController.cancelBooking);
+
 export default router;
