@@ -1,4 +1,3 @@
-// src/models/userModel.js
 import mongoose from 'mongoose';
 
 const userSchema = new mongoose.Schema({
@@ -18,6 +17,25 @@ const userSchema = new mongoose.Schema({
     password: {
         type: String,
         required: true
+    },
+    gender: {
+        type: String
+    },
+    dateOfBirth: {
+        type: Date
+    },
+    country: {
+        type: String
+    },
+    phone: {
+        type: String
+    },
+    profilePicture: {
+        type: String
+    },
+    isAdmin: {
+        type: Boolean,
+        default: false
     }
 });
 
