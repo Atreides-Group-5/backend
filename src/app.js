@@ -32,7 +32,7 @@ const corsOptions = {
 };
 
 // Enable CORS with options
-app.use(cors(corsOptions));
+app.use(cors());
 app.use(express.json({ limit: "4mb" }));
 // app.use('/uploads', express.static(path.join(__dirname, 'uploads'))); // ไม่ต้องใช้แล้ว
 
