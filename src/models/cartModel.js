@@ -1,13 +1,13 @@
 import mongoose from "mongoose";
 
 const cartSchema = new mongoose.Schema({
-	user_id: { type: mongoose.Types.ObjectId, ref: "User" },
+	user_id: { type: mongoose.Types.ObjectId, ref: "User", required: true },
 	cart: [{
-		trip_id: { type: mongoose.Types.ObjectId, ref: "Trip" },
-		departure_date: { type: Date },
+		trip_id: { type: mongoose.Types.ObjectId, ref: "Trip", required: true },
+		departure_date: { type: Date, required: true },
 		travelers: [{
-			firstName: { type: String },
-			lastName: { type: String }
+			firstName: { type: String, required: true },
+			lastName: { type: String, required: true }
 		}]
 	}]
 });

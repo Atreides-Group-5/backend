@@ -11,6 +11,7 @@ import tripRoutes from "./routes/tripRoutes.js";
 import couponRoutes from "./routes/couponRoutes.js";
 import userProfileRoutes from "./routes/userProfileRoutes.js";
 import cartRoutes from "./routes/cartRoutes.js";
+import bookingRoutes from "./routes/bookingRoutes.js";
 
 import errorMiddleware from './middlewares/errorMiddleware.js'; 
 
@@ -40,6 +41,7 @@ app.use("/api/trips", tripRoutes);
 app.use("/api/profile", userProfileRoutes); // Use the new routes
 app.use("/api/coupons", couponRoutes);
 app.use("/api/cart", cartRoutes);
+app.use("/api/bookings", bookingRoutes);
 
 // Handle 404 route not found
 app.use((req, res) => {
