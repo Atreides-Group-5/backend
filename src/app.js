@@ -27,7 +27,7 @@ const app = express();
 
 // Define CORS options
 const corsOptions = {
-  origin: "voyage-frontend-chi.vercel.app",
+  origin: ["voyage-frontend-chi.vercel.app","voyage-frontend-gt4sgfod4-smiles-projects-e115afc8.vercel.app"],
   optionsSuccessStatus: 200,
 };
 
