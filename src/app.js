@@ -12,6 +12,7 @@ import couponRoutes from "./routes/couponRoutes.js";
 import userProfileRoutes from "./routes/userProfileRoutes.js";
 import cartRoutes from "./routes/cartRoutes.js";
 import bookingRoutes from "./routes/bookingRoutes.js";
+import recommendedRoutes from "./routes/recommendedRoutes.js";  // นำเข้า recommendedRoutes
 
 import errorMiddleware from './middlewares/errorMiddleware.js'; 
 
@@ -42,6 +43,7 @@ app.use("/api/profile", userProfileRoutes); // Use the new routes
 app.use("/api/coupons", couponRoutes);
 app.use("/api/cart", cartRoutes);
 app.use("/api/bookings", bookingRoutes);
+app.use("/api/recommended", recommendedRoutes);  // เพิ่ม recommendedRoutes
 
 // Handle 404 route not found
 app.use((req, res) => {
