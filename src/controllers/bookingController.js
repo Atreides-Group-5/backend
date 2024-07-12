@@ -93,4 +93,52 @@ const getBookingsByStatus = async (req, res) => {
         res.status(500).json({ message: 'Failed to retrieve bookings' });
     }
 }
-export { createBooking, getBookingsByStatus };
+
+// Make payment
+const makePayment = async (req, res) => {
+    const { bookingId } = req.params;
+    try {
+        const booking = await Booking.findById(bookingId);  
+        if (!booking) {
+            return res.status(404).json({ error: "Booking not found" });
+        }
+
+        if (booking.booking_status === "completed") {
+            return res.status(400).json({ error: "Booking already paid" });
+        }
+        
+        if (booking.booking_status === "cancelled") {
+            return res.status(400).json({ error: "Booking already cancelled" });
+        }
+
+        booking.booking_status = "completed";
+        await booking.save();
+        res.status(200).json({ message: "Payment successful" });
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({ error: "Failed to make payment" });
+    }
+}
+
+// Cancel booking
+const cancelBooking = async (req, res) => {
+    const { bookingId } = req.params;
+    try {
+        const booking = await Booking.findById(bookingId);  
+        if (!booking) {
+            return res.status(404).json({ error: "Booking not found" });
+        }
+
+        if (booking.booking_status === "cancelled") {
+            return res.status(400).json({ error: "Booking already cancelled" });
+        }   
+
+        booking.booking_status = "cancelled";
+        await booking.save();
+        res.status(200).json({ message: "Booking cancelled successfully" });
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({ error: "Failed to cancel booking" });
+    }
+}
+export { createBooking, getBookingsByStatus, makePayment, cancelBooking };
