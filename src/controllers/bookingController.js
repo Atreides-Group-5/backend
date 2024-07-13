@@ -38,6 +38,7 @@ const createBooking = async (req, res) => {
             const image = images[0];
             return {
                 trip: { ...rest, image },
+                departure_date: booked_trip.departure_date,
                 travelers: booked_trip.travelers
             };
         }));
