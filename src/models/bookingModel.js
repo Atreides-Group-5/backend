@@ -17,6 +17,7 @@ const bookingSchema = new mongoose.Schema({
             }],
             image: { type: String, required: true }
         },
+        departure_date: { type: Date, required: true },
         travelers: [{
             firstName: { type: String, required: true },
 			lastName: { type: String, required: true }

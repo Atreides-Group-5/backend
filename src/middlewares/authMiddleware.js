@@ -19,15 +19,30 @@ export const validateRegistration = [
 ];
 
 export const authenticateMiddleware = async (req, res, next) => {
-    try {
-      const token = req.header('Authorization')?.replace('Bearer ', '');
-      if (!token) throw new Error('Unauthenticated');
-      const decoded = jwt.verify(token, process.env.JWT_SECRET);
-      // const user = await userService.getUserById(decoded.id);
-      // if (!user) throw new Error('Unauthenticated');
-      req.user = decoded;
-      next();
-    } catch (error) {
-      next(error);
-    }
-  };
+  try {
+    const token = req.header('Authorization')?.replace('Bearer ', '');
+    if (!token) throw new Error('Unauthenticated');
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    // const user = await userService.getUserById(decoded.id);
+    // if (!user) throw new Error('Unauthenticated');
+    req.user = decoded;
+    next();
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const authenticateAdminMiddleware = async (req, res, next) => {
+  try {
+    const token = req.header('Authorization')?.replace('Bearer ', '');
+    if (!token) throw new Error('Unauthenticated');
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    // const user = await userService.getUserById(decoded.id);
+    console.log(decoded);
+    if (!decoded.isAdmin) throw new Error('Unauthenticated');
+    req.user = decoded;
+    next();
+  } catch (error) {
+    next(error);
+  }
+};
