@@ -4,12 +4,14 @@ import Coupon from '../models/couponModel.js';
 import Cart from '../models/cartModel.js';
 
 const calculateDiscountAmount = (bookedTrips, type, discount) => {
+    // console.log("BOOKED TRIPS:", bookedTrips);
     let discount_amount = 0;
     if (type === 'fixed') {
         discount_amount = discount;
     } else if (type === 'percent') {
         let totalPrice = 0;
-        for(let trip in bookedTrips) {
+        for(let trip of bookedTrips) { // use for-of because bookedTrips is array
+            // console.log("TRIP:", trip);
             totalPrice += (trip.trip.price) * (trip.travelers.length);
         } 
         discount_amount = (totalPrice * discount) / 100;
@@ -19,7 +21,8 @@ const calculateDiscountAmount = (bookedTrips, type, discount) => {
 
 // Create booking
 const createBooking = async (req, res) => {
-	const { booked_trips, coupon_id, cart_item_ids } = req.body;
+    const { booked_trips, coupon_id, cart_item_ids } = req.body;
+    // console.log(booked_trips, coupon_id, cart_item_ids);
     
     let booked_trips_details = [];
     try {
@@ -34,7 +37,8 @@ const createBooking = async (req, res) => {
                 );
                 throw new Error('Trip not found');  
             } 
-            const { images, ...rest } = trip;
+            console.log("TRIP:", trip);
+            const { images, ...rest } = trip.toObject();
             const image = images[0];
             return {
                 trip: { ...rest, image },
@@ -43,6 +47,7 @@ const createBooking = async (req, res) => {
             };
         }));
     } catch (error) {
+        // console.log("Trip not found: ", error);
         return res.status(404).json({ error: "Trip no longer exists" });
     }
 
@@ -51,6 +56,7 @@ const createBooking = async (req, res) => {
     if (coupon_id) {
         coupon = await Coupon.findById(coupon_id);
         if (!coupon) {
+            // console.log("Coupon not found");
             return res.status(404).json({ error: "Coupon not found" });
         }
         discount_amount = calculateDiscountAmount(booked_trips_details, coupon.type, coupon.discount);
@@ -65,7 +71,7 @@ const createBooking = async (req, res) => {
 		}
 	});
 
-    console.log(booking);
+    // console.log(booking);
 
 	try {
 		const savedBooking = await booking.save();
@@ -79,6 +85,7 @@ const createBooking = async (req, res) => {
         // console.log(savedBooking);
 		res.status(201).json({message: 'Booking created successfully', bookingId: savedBooking._id});
 	} catch (err) {
+        console.log("Error creating booking: ", err);
 		res.status(500).json({ error: err.message });
 	}
 };
