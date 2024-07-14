@@ -8,13 +8,31 @@ const TARGET_FOLDER = "voyage/trips";
 const storage = multer.memoryStorage();
 const upload = multer({ storage: storage });
 
-// Get all trips
+// Get all trips with pagination
 const getAllTrips = async (req, res, next) => {
   try {
-    const trips = await Trip.find();
-    res.status(200).json({ message: "Get All Trips", trips: trips });
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 15;
+    const skipIndex = (page - 1) * limit;
+
+    const totalTrips = await Trip.countDocuments();
+    const totalPages = Math.ceil(totalTrips / limit);
+
+    const trips = await Trip.find()
+      .sort({ _id: -1 }) // เรียงลำดับจากใหม่ไปเก่า
+      .limit(limit)
+      .skip(skipIndex)
+      .exec();
+
+    res.status(200).json({
+      message: "Get All Trips",
+      trips: trips,
+      currentPage: page,
+      totalPages: totalPages,
+      totalTrips: totalTrips,
+    });
   } catch (error) {
-    next(error); // Use next() to pass the error to the error-handling middleware
+    next(error);
   }
 };
 
