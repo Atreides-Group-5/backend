@@ -199,6 +199,35 @@ const getBookingById = async (req, res) => {
       .json({ error: "Failed to retrieve booking", details: error.message });
   }
 };
+const getAllBookings = async (req, res) => {
+  try {
+    const bookings = await Booking.find().lean();
+
+    const bookingsWithTotals = bookings.map((booking) => {
+      let total_amount = 0;
+      booking.booked_trips.forEach((trip) => {
+        total_amount += trip.trip.price * trip.travelers.length;
+      });
+
+      const final_amount =
+        total_amount - (booking.coupon?.discount_amount || 0);
+
+      return {
+        ...booking,
+        total_amount,
+        final_amount,
+      };
+    });
+
+    res.json({
+      message: "Successfully retrieved all bookings",
+      bookings: bookingsWithTotals,
+    });
+  } catch (error) {
+    console.error("Error in getAllBookings:", error);
+    res.status(500).json({ error: "Failed to retrieve bookings" });
+  }
+};
 
 export {
   createBooking,
@@ -206,4 +235,5 @@ export {
   makePayment,
   cancelBooking,
   getBookingById,
+  getAllBookings,
 };
