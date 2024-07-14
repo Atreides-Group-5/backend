@@ -1,6 +1,7 @@
+import Recommended from "../models/recommendedModel.js";
+import { cloudinary } from "../config/cloudinaryConfig.js";
 
-import Recommended from '../models/recommendedModel.js';
-
+const TARGET_FOLDER = "voyage/recommended";
 export const getRecommended = async (req, res) => {
   try {
     const recommended = await Recommended.find();
@@ -27,22 +28,61 @@ export const createRecommended = async (req, res) => {
   }
 };
 
-export const updateRecommended = async (req, res) => {
+export const updateRecommended = async (req, res, next) => {
   const { id } = req.params;
-  const { imageSrc, altText, title } = req.body;
+  const { title, altText } = req.body;
 
   try {
-    const updatedRecommended = await Recommended.findByIdAndUpdate(
-      id,
-      { imageSrc, altText, title },
-      { new: true }
-    );
-    if (!updatedRecommended) {
-      return res.status(404).json({ message: 'Recommended not found' });
+    console.log("Received update request for recommended:", id);
+    console.log("Request body:", req.body);
+    console.log("Request files:", req.files);
+
+    const recommended = await Recommended.findById(id);
+
+    if (!recommended) {
+      return res.status(404).json({ message: "ไม่พบข้อมูลที่แนะนำ" });
     }
-    res.json(updatedRecommended);
+
+    // Update fields if provided
+    if (title) recommended.title = title;
+    if (altText) recommended.altText = altText;
+
+    // Handle new image
+    if (req.files && req.files.length > 0) {
+      // Delete existing image from Cloudinary if it exists
+      if (recommended.imageSrc) {
+        const publicId =
+          TARGET_FOLDER +
+          "/" +
+          recommended.imageSrc.split("/").pop().split(".")[0];
+        await cloudinary.uploader.destroy(publicId);
+      }
+
+      // Upload new image
+      try {
+        const result = await new Promise((resolve, reject) => {
+          const uploadStream = cloudinary.uploader.upload_stream(
+            { folder: TARGET_FOLDER, resource_type: "auto" },
+            (error, result) => {
+              if (error) reject(error);
+              else resolve(result);
+            }
+          );
+          uploadStream.end(req.files[0].buffer);
+        });
+        recommended.imageSrc = result.secure_url;
+      } catch (error) {
+        console.error("Error uploading image to Cloudinary:", error);
+        return res.status(500).json({ message: "Error uploading image" });
+      }
+    }
+
+    await recommended.save();
+
+    res.json({ message: "Recommended updated successfully", recommended });
   } catch (error) {
-    res.status(400).json({ message: error.message });
+    console.error("Error in updateRecommended:", error);
+    next(error);
   }
 };
 
@@ -52,9 +92,9 @@ export const deleteRecommended = async (req, res) => {
   try {
     const deletedRecommended = await Recommended.findByIdAndDelete(id);
     if (!deletedRecommended) {
-      return res.status(404).json({ message: 'Recommended not found' });
+      return res.status(404).json({ message: "Recommended not found" });
     }
-    res.json({ message: 'Recommended deleted successfully' });
+    res.json({ message: "Recommended deleted successfully" });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }

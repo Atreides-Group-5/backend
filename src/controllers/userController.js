@@ -60,3 +60,25 @@ export const loginUser = async (req, res) => {
     res.status(500).json({ message: "Server error", error });
   }
 };
+
+export const getUserById = async (req, res) => {
+  const { userId } = req.params;
+
+  try {
+    // Find the user by ID
+    const user = await User.findById(userId);
+
+    // Check if the user exists
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    // Exclude the password field from the response for security
+    const { password, ...userData } = user.toObject();
+
+    // Send the user data
+    res.json(userData);
+  } catch (error) {
+    res.status(500).json({ message: "Server error", error });
+  }
+};

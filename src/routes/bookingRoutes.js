@@ -34,5 +34,6 @@ router.get(
   authenticateMiddleware,
   bookingController.getBookingById
 );
+router.get("/", authenticateMiddleware, bookingController.getAllBookings);
 
 export default router;
